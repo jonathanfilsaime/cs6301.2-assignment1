@@ -1,17 +1,19 @@
 package com.company;
 
+import java.io.*;
 import java.util.*;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
-        String goalState = computeGoalState(args[0].length());
+        String initialState = readFile("tile1.txt").toLowerCase();
+        String goalState = computeGoalState(initialState.length());
         System.out.println("goal State: " + goalState);
 
-        String initialState = args[0].toLowerCase();
         String currentState = initialState;
         List<String> visited = new ArrayList<>();
         Stack<String> dataStructure = new Stack<>();
+        List<String> path = new ArrayList<>();
 
         dataStructure.add(currentState);
         int numberOfNodeExplored = 0;
@@ -29,7 +31,7 @@ public class Main {
                 //do nothing
             } else {
                 visited.add(currentState);
-                for(int i = 0; i < args[0].length(); i++) {
+                for(int i = 0; i < initialState.length(); i++) {
                     dataStructure.push(generateSuccessor(currentState, i));
                     numberOfSuccessorGenerated++;
                 }
@@ -74,5 +76,15 @@ public class Main {
         System.out.println("move: " + nodeIndex + " "+ successorNode);
 
         return successorNode;
+    }
+
+    public static String readFile(String filePath) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            break;
+        }
+        bufferedReader.close();
+        return line;
     }
 }
