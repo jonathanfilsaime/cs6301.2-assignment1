@@ -1,18 +1,27 @@
-package com.company;
 
 import java.io.*;
 import java.util.*;
 
-public class Main {
+public class Search {
+
+    static boolean cost;
+    static String inputFile;
+
     public static void main(String[] args) throws IOException {
+
+        cost = false;
+
+        commandLineInputCheck(args);
 
         String initialState = readFile("tile1.txt").toLowerCase();
         String goalState = computeGoalState(initialState.length());
         System.out.println("goal State: " + goalState);
 
+        System.out.println("initial state :" + initialState);
+
         String currentState = initialState;
         List<String> visited = new ArrayList<>();
-        Stack<String> dataStructure = new Stack<>();
+        Queue<String> dataStructure = new PriorityQueue<>();
         List<String> path = new ArrayList<>();
 
         dataStructure.add(currentState);
@@ -20,19 +29,21 @@ public class Main {
         int numberOfSuccessorGenerated = 0;
 
         do {
-            currentState = dataStructure.pop();
+            currentState = dataStructure.poll();
 
+            //goal test
             if (isGoalState(currentState, goalState)) {
                 System.out.println("number of successor generated : " + numberOfSuccessorGenerated);
                 System.out.println("number of node explored : " + numberOfNodeExplored);
                 System.out.println("success current state " + currentState + " == " + goalState + " goalState.");
                 break;
             } else if (isVisited(currentState, visited)) {
-                //do nothing
+                //if visited already do nothing
             } else {
+                //generate successor
                 visited.add(currentState);
                 for(int i = 0; i < initialState.length(); i++) {
-                    dataStructure.push(generateSuccessor(currentState, i));
+                    dataStructure.add(generateSuccessor(currentState, i));
                     numberOfSuccessorGenerated++;
                 }
             }
@@ -45,9 +56,9 @@ public class Main {
         int half = length / 2;
         StringBuilder stringBuilder = new StringBuilder();
 
-        for(int i = 0; i < half; i++) { stringBuilder.append("w"); }
-        stringBuilder.append("x");
         for(int i = 0; i < half; i++) { stringBuilder.append("b"); }
+        stringBuilder.append("x");
+        for(int i = 0; i < half; i++) { stringBuilder.append("w"); }
 
         return stringBuilder.toString();
     }
@@ -86,5 +97,58 @@ public class Main {
         }
         bufferedReader.close();
         return line;
+    }
+
+    public static void commandLineInputCheck(String[] args) {
+        if(args.length > 4) {
+            throw new IllegalArgumentException("too many arguments");
+        }
+
+        if(args.length < 3) {
+            throw new IllegalArgumentException("too few arguments");
+        }
+
+        if(!args[0].equalsIgnoreCase("search")) {
+            throw new IllegalArgumentException("first argument should be search");
+        }
+
+        if(args[1].equalsIgnoreCase("-cost")) {
+            cost = true;
+            System.out.println("cost " + args[1]);
+            algoSelection(args[2]);
+            setInputFile(args[3]);
+        } else {
+            algoSelection(args[1]);
+            setInputFile(args[2]);
+        }
+
+    }
+
+    public static void algoSelection(String arg) {
+        System.out.println("algo selection: " + arg);
+        switch (arg) {
+            case "BFS":
+                System.out.println(arg);
+                break;
+            case "DFS":
+                System.out.println(arg);
+                break;
+            case "UCS":
+                System.out.println(arg);
+                break;
+            case "GS":
+                System.out.println(arg);
+                break;
+            case "A-star":
+                System.out.println(arg);
+                break;
+            default:
+                System.out.println(arg);
+                throw new IllegalArgumentException("second argument should be -cost or <BFS|DFS|UCS|GS|A-star> ");
+        }
+    }
+
+    public static void setInputFile(String arg) {
+        System.out.println("input file " + arg);
     }
 }
