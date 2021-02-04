@@ -1,3 +1,4 @@
+package com.company;
 
 import java.io.*;
 import java.util.*;
@@ -6,6 +7,10 @@ public class Search {
 
     static boolean cost;
     static String inputFile;
+    static String goalState;
+    static String initialState;
+    static String algo;
+    static List<ParentChild> parentChild;
 
     public static void main(String[] args) throws IOException {
 
@@ -13,43 +18,49 @@ public class Search {
 
         commandLineInputCheck(args);
 
-        String initialState = readFile("tile1.txt").toLowerCase();
-        String goalState = computeGoalState(initialState.length());
-        System.out.println("goal State: " + goalState);
+        initialState = readFile(inputFile).toLowerCase();
+        goalState = computeGoalState(initialState.length());
+        parentChild = new ArrayList<>();
 
+        System.out.println("goal State: " + goalState);
         System.out.println("initial state :" + initialState);
 
-        String currentState = initialState;
+        Node currentState = new Node(initialState, 0);
         List<String> visited = new ArrayList<>();
-        Queue<String> dataStructure = new PriorityQueue<>();
-        List<String> path = new ArrayList<>();
+        PriorityQueue<Node> dataStructure = new PriorityQueue<Node>(11, new NodeComparator());
 
         dataStructure.add(currentState);
-        int numberOfNodeExplored = 0;
-        int numberOfSuccessorGenerated = 0;
 
         do {
             currentState = dataStructure.poll();
 
             //goal test
-            if (isGoalState(currentState, goalState)) {
-                System.out.println("number of successor generated : " + numberOfSuccessorGenerated);
-                System.out.println("number of node explored : " + numberOfNodeExplored);
-                System.out.println("success current state " + currentState + " == " + goalState + " goalState.");
+            if (isGoalState(currentState.getTile(), goalState)) {
+                System.out.println("success current state " + currentState.getTile() + " == " + goalState + " goalState.");
+                System.out.println("depth : " + parentChild.size());
+                parentChild.forEach(p -> System.out.println(p.getParent() + " " + p.getChild()));
                 break;
-            } else if (isVisited(currentState, visited)) {
+            } else if (isVisited(currentState.getTile(), visited)) {
                 //if visited already do nothing
             } else {
                 //generate successor
-                visited.add(currentState);
+                visited.add(currentState.getTile());
                 for(int i = 0; i < initialState.length(); i++) {
-                    dataStructure.add(generateSuccessor(currentState, i));
-                    numberOfSuccessorGenerated++;
+                    if (i != currentState.getTile().indexOf('x'))
+                    {
+                        Node successor = new Node(generateSuccessor(currentState.getTile(), i), computeCostFunction());
+                        dataStructure.add(successor);
+                    }
                 }
             }
-            numberOfNodeExplored++;
         } while (true);
 
+    }
+
+    public static boolean isVisited(String currentState, List<String> visited) { return visited.contains(currentState); }
+
+    public static boolean isGoalState(String currentState, String goalState){
+        return goalState.equals(currentState);
     }
 
     public static String computeGoalState(int length) {
@@ -61,14 +72,6 @@ public class Search {
         for(int i = 0; i < half; i++) { stringBuilder.append("w"); }
 
         return stringBuilder.toString();
-    }
-
-    public static boolean isVisited(String currentState, List<String> visited) {
-        return visited.contains(currentState);
-    }
-
-    public static boolean isGoalState(String currentState, String goalState){
-        return goalState.equals(currentState);
     }
 
     public static String generateSuccessor(String currentState, int nodeIndex) {
@@ -86,7 +89,33 @@ public class Search {
 
         System.out.println("move: " + nodeIndex + " "+ successorNode);
 
+        computeDepth(currentState, successorNode);
+
         return successorNode;
+    }
+
+    private static int computeCostFunction() {
+        if (algo.equalsIgnoreCase("BFS")){
+            return parentChild.size();
+        }
+        if (algo.equalsIgnoreCase("DFS")){
+            return 1/parentChild.size();
+        }
+        return 0;
+    }
+
+    private static void computeDepth(String currentState, String successorNode) {
+
+        boolean flag = false;
+        for (int i = 0; i < parentChild.size() ; i++) {
+            if (parentChild.get(i).getParent().equalsIgnoreCase(currentState)) {
+                flag = true;
+            }
+        }
+
+        if (!flag) {
+            parentChild.add(new ParentChild(currentState, successorNode));
+        }
     }
 
     public static String readFile(String filePath) throws IOException {
@@ -129,18 +158,23 @@ public class Search {
         switch (arg) {
             case "BFS":
                 System.out.println(arg);
+                algo = "BFS";
                 break;
             case "DFS":
                 System.out.println(arg);
+                algo = "DFS";
                 break;
             case "UCS":
                 System.out.println(arg);
+                algo = "UCS";
                 break;
             case "GS":
                 System.out.println(arg);
+                algo = "GS";
                 break;
             case "A-star":
                 System.out.println(arg);
+                algo = "A-star";
                 break;
             default:
                 System.out.println(arg);
@@ -150,5 +184,6 @@ public class Search {
 
     public static void setInputFile(String arg) {
         System.out.println("input file " + arg);
+        inputFile = arg;
     }
 }
