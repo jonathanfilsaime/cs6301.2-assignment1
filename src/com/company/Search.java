@@ -36,9 +36,8 @@ public class Search {
 
             //goal test
             if (isGoalState(currentState.getTile(), goalState)) {
-                System.out.println("success current state " + currentState.getTile() + " == " + goalState + " goalState.");
-                System.out.println("depth : " + parentChild.size());
-                parentChild.forEach(p -> System.out.println(p.getParent() + " " + p.getChild()));
+                System.out.println("success current state " + currentState.getTile() + " == " + goalState + " goal State.");
+                System.out.println("success nodes at depth : " + parentChild.size());
                 break;
             } else if (isVisited(currentState.getTile(), visited)) {
                 //if visited already do nothing
@@ -86,8 +85,6 @@ public class Search {
         StringBuilder stringBuilder = new StringBuilder();
         successor.forEach(v -> {stringBuilder.append(v);});
         String successorNode = stringBuilder.toString();
-
-        System.out.println("move: " + nodeIndex + " "+ successorNode);
 
         computeDepth(currentState, successorNode);
 
@@ -143,7 +140,6 @@ public class Search {
 
         if(args[1].equalsIgnoreCase("-cost")) {
             cost = true;
-            System.out.println("cost " + args[1]);
             algoSelection(args[2]);
             setInputFile(args[3]);
         } else {
@@ -154,36 +150,28 @@ public class Search {
     }
 
     public static void algoSelection(String arg) {
-        System.out.println("algo selection: " + arg);
         switch (arg) {
             case "BFS":
-                System.out.println(arg);
                 algo = "BFS";
                 break;
             case "DFS":
-                System.out.println(arg);
                 algo = "DFS";
                 break;
             case "UCS":
-                System.out.println(arg);
                 algo = "UCS";
                 break;
             case "GS":
-                System.out.println(arg);
                 algo = "GS";
                 break;
             case "A-star":
-                System.out.println(arg);
                 algo = "A-star";
                 break;
             default:
-                System.out.println(arg);
                 throw new IllegalArgumentException("second argument should be -cost or <BFS|DFS|UCS|GS|A-star> ");
         }
     }
 
     public static void setInputFile(String arg) {
-        System.out.println("input file " + arg);
         inputFile = arg;
     }
 }
