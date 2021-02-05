@@ -10,50 +10,64 @@ public class Search {
     static String goalState;
     static String initialState;
     static String algo;
-    static List<ParentChild> parentChild;
+    static Map<String, String> parentChild;
 
     public static void main(String[] args) throws IOException {
 
         cost = false;
 
-        commandLineInputCheck(args);
+        commandLineInputCheck(args); // good for sure
 
-        initialState = readFile(inputFile).toLowerCase();
-        goalState = computeGoalState(initialState.length());
-        parentChild = new ArrayList<>();
+        initialState = readFile(inputFile).toLowerCase(); // good for sure
+        goalState = computeGoalState(initialState.length()); // good for sure
+        parentChild = new HashMap<>();
 
-        System.out.println("goal State: " + goalState);
         System.out.println("initial state :" + initialState);
+        System.out.println("goal State: " + goalState);
+
 
         Node currentState = new Node(initialState, 0);
         List<String> visited = new ArrayList<>();
-        PriorityQueue<Node> dataStructure = new PriorityQueue<Node>(11, new NodeComparator());
+        PriorityQueue<Node> dataStructure = new PriorityQueue<Node>(13, new NodeComparator());
 
         dataStructure.add(currentState);
 
         do {
             currentState = dataStructure.poll();
-
             //goal test
             if (isGoalState(currentState.getTile(), goalState)) {
-                System.out.println("success current state " + currentState.getTile() + " == " + goalState + " goal State.");
-                System.out.println("success nodes at depth : " + parentChild.size());
+                foundGoalNode(currentState);
                 break;
-            } else if (isVisited(currentState.getTile(), visited)) {
-                //if visited already do nothing
             } else {
-                //generate successor
-                visited.add(currentState.getTile());
                 for(int i = 0; i < initialState.length(); i++) {
-                    if (i != currentState.getTile().indexOf('x'))
-                    {
-                        Node successor = new Node(generateSuccessor(currentState.getTile(), i), computeCostFunction());
-                        dataStructure.add(successor);
+                    if (i != currentState.getTile().indexOf('x')) {
+
+                        Node successor = new Node(generateSuccessor(currentState.getTile(), i), 0);
+
+                        if (!isGoalState(successor.getTile(), goalState)) {
+                            if(!isVisited(successor.getTile(), visited)) {
+                                visited.add(currentState.getTile());
+                                visited.add(successor.getTile());
+                                dataStructure.add(successor);
+                                parentChild.put(currentState.getTile(), successor.getTile());
+                            }
+                        } else {
+                            dataStructure.add(successor);
+                        }
                     }
                 }
             }
         } while (true);
 
+    }
+
+    private static void foundGoalNode(Node currentState) {
+        System.out.println("success current state " + currentState.getTile() + " == " + goalState + " goal State.");
+        System.out.println("success nodes at depth : " + parentChild.size());
+
+        for (Map.Entry<String, String> parentChild : parentChild.entrySet()) {
+            System.out.println(String.format("Parent: %s -> child: %s", parentChild.getKey(), parentChild.getValue()));
+        }
     }
 
     public static boolean isVisited(String currentState, List<String> visited) { return visited.contains(currentState); }
@@ -85,9 +99,6 @@ public class Search {
         StringBuilder stringBuilder = new StringBuilder();
         successor.forEach(v -> {stringBuilder.append(v);});
         String successorNode = stringBuilder.toString();
-
-        computeDepth(currentState, successorNode);
-
         return successorNode;
     }
 
@@ -99,20 +110,6 @@ public class Search {
             return 1/parentChild.size();
         }
         return 0;
-    }
-
-    private static void computeDepth(String currentState, String successorNode) {
-
-        boolean flag = false;
-        for (int i = 0; i < parentChild.size() ; i++) {
-            if (parentChild.get(i).getParent().equalsIgnoreCase(currentState)) {
-                flag = true;
-            }
-        }
-
-        if (!flag) {
-            parentChild.add(new ParentChild(currentState, successorNode));
-        }
     }
 
     public static String readFile(String filePath) throws IOException {
