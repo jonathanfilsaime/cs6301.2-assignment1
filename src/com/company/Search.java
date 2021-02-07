@@ -66,7 +66,6 @@ public class Search {
         Collections.reverse(path);
         System.out.println("path :" + path);
 
-
         for (Map.Entry<String, String> parentChild : parentChild.entrySet()) {
             System.out.println(String.format("key: %s -> value: %s", parentChild.getKey(), parentChild.getValue()));
         }
