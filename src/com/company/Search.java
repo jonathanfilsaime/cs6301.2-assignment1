@@ -11,20 +11,21 @@ public class Search {
     static String initialState;
     static String algo;
     static Map<String, String> parentChild;
+    static List<String> path;
+    static int numberOfMoves;
 
     public static void main(String[] args) throws IOException {
 
         cost = false;
+        path = new ArrayList<>();
+        commandLineInputCheck(args);
 
-        commandLineInputCheck(args); // good for sure
-
-        initialState = readFile(inputFile).toLowerCase(); // good for sure
-        goalState = computeGoalState(initialState.length()); // good for sure
+        initialState = readFile(inputFile).toLowerCase();
+        goalState = computeGoalState(initialState.length());
         parentChild = new HashMap<>();
 
         System.out.println("initial state :" + initialState);
         System.out.println("goal State: " + goalState);
-
 
         Node currentState = new Node(initialState, 0);
         List<String> visited = new ArrayList<>();
@@ -42,20 +43,18 @@ public class Search {
                 for(int i = 0; i < initialState.length(); i++) {
                     if (i != currentState.getTile().indexOf('x')) {
 
-                        Node successor = new Node(generateSuccessor(currentState.getTile(), i), 0);
+                        String successor = generateSuccessor(currentState.getTile(), i);
 
-                        if (!isGoalState(successor.getTile(), goalState)) {
-                            if(!isVisited(successor.getTile(), visited)) {
-                                visited.add(currentState.getTile());
-                                visited.add(successor.getTile());
-                                dataStructure.add(successor);
-                                parentChild.put(currentState.getTile(), successor.getTile());
-                            }
-                        } else {
-                            dataStructure.add(successor);
+                        if (!isVisited(successor, visited)) {
+                            parentChild.put(successor, currentState.getTile());
+                            int depth = computeDepthFunction(successor, parentChild);
+                            int cost = computeCostFunction(depth, successor);
+                            Node successorNode = new Node(generateSuccessor(currentState.getTile(), i), cost);
+                            dataStructure.add(successorNode);
                         }
                     }
                 }
+                visited.add(currentState.getTile());
             }
         } while (true);
 
@@ -63,10 +62,13 @@ public class Search {
 
     private static void foundGoalNode(Node currentState) {
         System.out.println("success current state " + currentState.getTile() + " == " + goalState + " goal State.");
-        System.out.println("success nodes at depth : " + parentChild.size());
+        System.out.println("success nodes at depth : " + computeDepthFunction(goalState, parentChild));
+        Collections.reverse(path);
+        System.out.println("path :" + path);
+
 
         for (Map.Entry<String, String> parentChild : parentChild.entrySet()) {
-            System.out.println(String.format("Parent: %s -> child: %s", parentChild.getKey(), parentChild.getValue()));
+            System.out.println(String.format("key: %s -> value: %s", parentChild.getKey(), parentChild.getValue()));
         }
     }
 
@@ -99,17 +101,53 @@ public class Search {
         StringBuilder stringBuilder = new StringBuilder();
         successor.forEach(v -> {stringBuilder.append(v);});
         String successorNode = stringBuilder.toString();
+        numberOfMoves++;
         return successorNode;
     }
 
-    private static int computeCostFunction() {
-        if (algo.equalsIgnoreCase("BFS")){
-            return parentChild.size();
+    public static int computeNumberOfTilesOutOfPlace(String successor) {
+        int numberOfTilesOutOfPlace = 0;
+        for (int i = 0; i < successor.length(); i++ ) {
+            if (successor.charAt(i) != goalState.charAt(i)) {
+                numberOfTilesOutOfPlace++;
+            }
         }
-        if (algo.equalsIgnoreCase("DFS")){
-            return 1/parentChild.size();
+        return numberOfTilesOutOfPlace;
+    }
+
+    private static int computeCostFunction(int depth, String successor) {
+        if (algo == "BFS") {
+           return depth;
+        } else if (algo == "DFS") {
+            return 1/depth;
+        } else if (algo == "UCS") {
+            return numberOfMoves;
+        } else if (algo == "GS" && !cost) {
+            return computeNumberOfTilesOutOfPlace(successor);
+        }else if (algo == "GS" && cost) {
+            return computeNumberOfTilesOutOfPlace(successor); /// modify this
+        } else if (algo == "A-star" && !cost) {
+            return numberOfMoves + computeNumberOfTilesOutOfPlace(successor);
+        } else if (algo == "A-star" && cost) {
+            return numberOfMoves + computeNumberOfTilesOutOfPlace(successor); /// modify this
         }
         return 0;
+    }
+
+    private static int computeDepthFunction(String successor, Map<String, String> parentChild) {
+        path.clear();
+        int depth = 0;
+        String node = successor;
+        while(true) {
+            path.add(node);
+            node = parentChild.get(node);
+            depth++;
+            if(node == initialState) {
+                path.add(node);
+                break;
+            }
+        }
+        return depth;
     }
 
     public static String readFile(String filePath) throws IOException {
