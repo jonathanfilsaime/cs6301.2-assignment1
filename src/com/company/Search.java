@@ -16,17 +16,15 @@ public class Search {
 
     public static void main(String[] args) throws IOException {
 
-        cost = false;
-        path = new ArrayList<>();
         commandLineInputCheck(args);
 
+        cost = false;
+        path = new ArrayList<>();
         initialState = readFile(inputFile).toLowerCase();
         goalState = computeGoalState(initialState.length());
         parentChild = new HashMap<>();
 
         System.out.println(initialState);
-//        System.out.println("goal State: " + goalState);
-
         Node currentState = new Node(initialState, 0);
         List<String> visited = new ArrayList<>();
         PriorityQueue<Node> dataStructure = new PriorityQueue<Node>(13, new NodeComparator());
@@ -37,7 +35,7 @@ public class Search {
             currentState = dataStructure.poll();
             //goal test
             if (isGoalState(currentState.getTile(), goalState)) {
-                foundGoalNode(currentState);
+                foundGoalNode();
                 break;
             } else {
                 for(int i = 0; i < initialState.length(); i++) {
@@ -60,16 +58,17 @@ public class Search {
 
     }
 
-    private static void foundGoalNode(Node currentState) {
-        System.out.println("");
-        System.out.println("");
-        System.out.println("Final Result for " + algo + ":");
-        System.out.println(initialState);
+    private static void foundGoalNode() {
+        System.out.println("\n\nFinal Result for " + algo + ":");
         computeDepthFunction(goalState, parentChild);
         Collections.reverse(path);
 
-        for(int i = 1; i < path.size(); i++) {
-            System.out.println("Step " + (i-1) + ": move " + path.get(i).indexOf('x') + " " + path.get(i));
+        for(int i = 0; i < path.size(); i++) {
+            if (i == 0){
+                System.out.println("Step " + i + ": " + path.get(i));
+            } else {
+                System.out.println("Step " + i + ": move " + path.get(i).indexOf('x') + " " + path.get(i));
+            }
         }
     }
 

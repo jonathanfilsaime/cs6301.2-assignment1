@@ -1,5 +1,10 @@
 #compile
-javac Search.java
+cd cs6301.2-assignment1/src
+javac com/company/Search.java
 
 #run
-java Search
+cd cs6301.2-assignment1/out/production/cs6301.2-assignment1
+java com/company/Search search DFS <Absolute file path>
+
+example 1: java com/company/Search search DFS /Users/jonathanfils-aime/Documents/codebase/cs6301.2-assignment1/tile1.txt
+example 2: java com/company/Search search -cost DFS /Users/jonathanfils-aime/Documents/codebase/cs6301.2-assignment1/tile1.txt
