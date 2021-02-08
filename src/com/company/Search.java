@@ -24,8 +24,8 @@ public class Search {
         goalState = computeGoalState(initialState.length());
         parentChild = new HashMap<>();
 
-        System.out.println("initial state :" + initialState);
-        System.out.println("goal State: " + goalState);
+        System.out.println(initialState);
+//        System.out.println("goal State: " + goalState);
 
         Node currentState = new Node(initialState, 0);
         List<String> visited = new ArrayList<>();
@@ -49,7 +49,7 @@ public class Search {
                             parentChild.put(successor, currentState.getTile());
                             int depth = computeDepthFunction(successor, parentChild);
                             int cost = computeCostFunction(depth, successor);
-                            Node successorNode = new Node(generateSuccessor(currentState.getTile(), i), cost);
+                            Node successorNode = new Node(successor, cost);
                             dataStructure.add(successorNode);
                         }
                     }
@@ -61,13 +61,15 @@ public class Search {
     }
 
     private static void foundGoalNode(Node currentState) {
-        System.out.println("success current state " + currentState.getTile() + " == " + goalState + " goal State.");
-        System.out.println("success nodes at depth : " + computeDepthFunction(goalState, parentChild));
+        System.out.println("");
+        System.out.println("");
+        System.out.println("Final Result for " + algo + ":");
+        System.out.println(initialState);
+        computeDepthFunction(goalState, parentChild);
         Collections.reverse(path);
-        System.out.println("path :" + path);
 
-        for (Map.Entry<String, String> parentChild : parentChild.entrySet()) {
-            System.out.println(String.format("key: %s -> value: %s", parentChild.getKey(), parentChild.getValue()));
+        for(int i = 1; i < path.size(); i++) {
+            System.out.println("Step " + (i-1) + ": move " + path.get(i).indexOf('x') + " " + path.get(i));
         }
     }
 
@@ -100,6 +102,7 @@ public class Search {
         StringBuilder stringBuilder = new StringBuilder();
         successor.forEach(v -> {stringBuilder.append(v);});
         String successorNode = stringBuilder.toString();
+        System.out.println("Move " + nodeIndex +" " + successorNode);
         numberOfMoves++;
         return successorNode;
     }
