@@ -1,3 +1,14 @@
+Kendall Wahnschaffe
+Jonathan Fils-Aime
+
+Source Files: Search.java, ParentChild.java, NodeComparator.java, Node.java
+Platform: MacOSx
+Programming Language: java 15
+
+Documentation of Problems encountered
+1- Creating the correct data structure to keeping track of the path
+2- Creating the correct data structure for the cost
+
 #compile
 cd cs6301.2-assignment1/src
 javac com/company/Search.java
@@ -6,5 +17,5 @@ javac com/company/Search.java
 cd cs6301.2-assignment1/out/production/cs6301.2-assignment1
 java com/company/Search search DFS <Absolute file path>
 
-example 1: java com/company/Search search DFS /Users/jonathanfils-aime/Documents/codebase/cs6301.2-assignment1/tile1.txt
-example 2: java com/company/Search search -cost DFS /Users/jonathanfils-aime/Documents/codebase/cs6301.2-assignment1/tile1.txt
+example 1: java com/company/Search search DFS /Users/<userName>/Documents/codebase/cs6301.2-assignment1/tile1.txt
+example 2: java com/company/Search search -cost DFS /Users/<userName>/Documents/codebase/cs6301.2-assignment1/tile1.txt
