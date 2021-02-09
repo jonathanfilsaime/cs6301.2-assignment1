@@ -13,6 +13,7 @@ public class Search {
     static Map<String, String> parentChild;
     static List<String> path;
     static int numberOfMoves;
+    static int moveLength;
 
     public static void main(String[] args) throws IOException {
 
@@ -24,7 +25,7 @@ public class Search {
         goalState = computeGoalState(initialState.length());
         parentChild = new HashMap<>();
 
-        System.out.println(initialState);
+//        System.out.println(initialState);
         Node currentState = new Node(initialState, 0);
         List<String> visited = new ArrayList<>();
         PriorityQueue<Node> dataStructure = new PriorityQueue<Node>(13, new NodeComparator());
@@ -55,11 +56,10 @@ public class Search {
                 visited.add(currentState.getTile());
             }
         } while (true);
-
     }
 
     private static void foundGoalNode() {
-        System.out.println("\n\nFinal Result for " + algo + ":");
+        System.out.println("Final Result for " + algo + ":");
         computeDepthFunction(goalState, parentChild);
         Collections.reverse(path);
 
@@ -101,8 +101,8 @@ public class Search {
         StringBuilder stringBuilder = new StringBuilder();
         successor.forEach(v -> {stringBuilder.append(v);});
         String successorNode = stringBuilder.toString();
-        System.out.println("Move " + nodeIndex +" " + successorNode);
         numberOfMoves++;
+        moveLength = Math.abs(xIndex - nodeIndex);
         return successorNode;
     }
 
@@ -121,16 +121,16 @@ public class Search {
            return depth;
         } else if (algo == "DFS") {
             return 1/depth;
-        } else if (algo == "UCS") {
+        } else if (algo == "UCS" && !cost) {
             return numberOfMoves;
-        } else if (algo == "GS" && !cost) {
+        } else if (algo == "UCS" && cost) {
+            return moveLength;   //modify this
+        } else if (algo == "GS") {
             return computeNumberOfTilesOutOfPlace(successor);
-        }else if (algo == "GS" && cost) {
-            return computeNumberOfTilesOutOfPlace(successor); /// modify this
         } else if (algo == "A-star" && !cost) {
             return numberOfMoves + computeNumberOfTilesOutOfPlace(successor);
         } else if (algo == "A-star" && cost) {
-            return numberOfMoves + computeNumberOfTilesOutOfPlace(successor); /// modify this
+            return moveLength + computeNumberOfTilesOutOfPlace(successor);
         }
         return 0;
     }
