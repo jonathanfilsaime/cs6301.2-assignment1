@@ -17,15 +17,14 @@ public class Search {
 
     public static void main(String[] args) throws IOException {
 
+        cost = false;
         commandLineInputCheck(args);
 
-        cost = false;
         path = new ArrayList<>();
         initialState = readFile(inputFile).toLowerCase();
         goalState = computeGoalState(initialState.length());
         parentChild = new HashMap<>();
 
-//        System.out.println(initialState);
         Node currentState = new Node(initialState, 0);
         List<String> visited = new ArrayList<>();
         PriorityQueue<Node> dataStructure = new PriorityQueue<Node>(13, new NodeComparator());
@@ -63,11 +62,21 @@ public class Search {
         computeDepthFunction(goalState, parentChild);
         Collections.reverse(path);
 
-        for(int i = 0; i < path.size(); i++) {
-            if (i == 0){
-                System.out.println("Step " + i + ": " + path.get(i));
-            } else {
-                System.out.println("Step " + i + ": move " + path.get(i).indexOf('x') + " " + path.get(i));
+        if (cost) {
+            for(int i = 0; i < path.size(); i++) {
+                if (i == 0){
+                    System.out.println("Step " + i + ": " + path.get(i));
+                } else {
+                    System.out.println("Step " + i + ": move " + path.get(i).indexOf('x') + " " + path.get(i) + " (c=" + (Math.abs(path.get(i).indexOf('x') - path.get(i - 1).indexOf('x')))+ ")");
+                }
+            }
+        } else {
+            for(int i = 0; i < path.size(); i++) {
+                if (i == 0){
+                    System.out.println("Step " + i + ": " + path.get(i));
+                } else {
+                    System.out.println("Step " + i + ": move " + path.get(i).indexOf('x') + " " + path.get(i));
+                }
             }
         }
     }
